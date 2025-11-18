@@ -1,0 +1,62 @@
+# Data files
+*.csv
+*.xlsx
+*.xls
+
+# Model files
+saved_model.pb
+variables/
+*.h5
+*.pkl
+*.joblib
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation files (if you want to version control these, remove this section)
+*.pptx
+*.docx
+*.pdf
+
+# Large output files
+*.png
+*.jpg
+*.jpeg
+
+# Logs
+*.log
+
+# Old/backup files
+*.old
+*.backup
+*.bak
+*_old.*
+*_backup.*
+old/
+backup/
+
+# Proprietary data from Jubilant (do not upload)
+jubilant/
