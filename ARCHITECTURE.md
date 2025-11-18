@@ -1,8 +1,8 @@
-# DeepFuture Net Architecture
+# DeepSequence Architecture
 
 ## Overview
 
-DeepFuture Net is a custom deep learning architecture designed for multi-horizon time series forecasting at the SKU level. Inspired by Facebook's Prophet, it decomposes the forecasting problem into seasonal and trend components while leveraging deep learning for complex pattern recognition.
+DeepSequence is a custom deep learning architecture designed for multi-horizon time series forecasting at the SKU level. Inspired by Facebook's Prophet, it decomposes the forecasting problem into seasonal and trend components while leveraging deep learning for complex pattern recognition.
 
 ## Design Philosophy
 

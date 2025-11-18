@@ -6,7 +6,7 @@ This document compares the performance of different forecasting approaches on th
 
 ## Models Compared
 
-### 1. DeepFuture Net (Custom Architecture) ⭐
+- ### 1. DeepSequence (Custom Architecture) ⭐
 - **Type**: Deep Learning (Prophet-inspired)
 - **Key Features**: 
   - Seasonal decomposition (weekly, monthly, yearly)
@@ -30,7 +30,7 @@ This document compares the performance of different forecasting approaches on th
 
 | Model | Validation MAPE | Strengths | Weaknesses |
 |-------|----------------|-----------|------------|
-| **DeepFuture Net** | **~180-220%*** | Strong seasonal capture, handles complex patterns, good for high-volume SKUs | Computationally expensive, needs sufficient data |
+| **DeepSequence** | **~180-220%*** | Strong seasonal capture, handles complex patterns, good for high-volume SKUs | Computationally expensive, needs sufficient data |
 | **LightGBM Cluster** | **~200-250%*** | Fast training, interpretable, works well with limited data | Less effective for complex seasonality |
 | **LightGBM Distance** | **~220-280%*** | Good for intermittent demand, handles zero periods well | Struggles with strong trends |
 | **Naive Shift-7** | **~300-400%*** | Very fast, simple baseline | Poor accuracy, no pattern learning |
@@ -50,7 +50,7 @@ For each SKU:
   ELIF lgb_distance_mape < min(lgb_cluster_mape, deep_future_mape):
       Use LightGBM Distance forecast  
   ELSE:
-      Use DeepFuture Net forecast
+      Use DeepSequence forecast
 ```
 
 ### Model Selection Distribution
@@ -59,7 +59,7 @@ For each SKU:
 |---------------|----------------|------------|
 | LightGBM Cluster | ~40-50% | Best for stable patterns |
 | LightGBM Distance | ~30-40% | Best for intermittent demand |
-| DeepFuture Net | ~10-20% | Best for complex seasonality |
+| DeepSequence | ~10-20% | Best for complex seasonality |
 
 ---
 
@@ -70,11 +70,11 @@ For each SKU:
 #### High-Volume SKUs (>1000 units/week)
 | Model | Avg MAPE | Median MAPE |
 |-------|----------|-------------|
-| DeepFuture Net | 145% | 98% |
+| DeepSequence | 145% | 98% |
 | LightGBM Cluster | 178% | 125% |
 | LightGBM Distance | 210% | 165% |
 
-**Winner**: 🏆 **DeepFuture Net** - Excels with sufficient data and clear patterns
+**Winner**: 🏆 **DeepSequence** - Excels with sufficient data and clear patterns
 
 #### Medium-Volume SKUs (100-1000 units/week)
 | Model | Avg MAPE | Median MAPE |

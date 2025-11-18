@@ -2,23 +2,23 @@
 
 ## ✅ ALL TASKS COMPLETED!
 
-Your jubilant SKU forecasting project with **DeepFuture Net** is now ready for GitHub!
+Your SKU forecasting project with **DeepSequence** is now ready for GitHub!
 
 ---
 
 ## 📋 Completed Tasks
 
-### ✅ Task 1: Extract DeepFuture Net into Python Modules
+### ✅ Task 1: Extract DeepSequence into Python Modules
 **Status**: COMPLETE
 
 **Created**:
-- `src/deepfuture/__init__.py` - Package initialization
-- `src/deepfuture/config.py` - Configuration and path management
-- `src/deepfuture/utils.py` - Utility functions (data prep, encoding, metrics)
-- `src/deepfuture/activations.py` - Custom activation functions (swish, mish, listh)
-- `src/deepfuture/seasonal_component.py` - Seasonal decomposition module
-- `src/deepfuture/regressor_component.py` - Regression component module
-- `src/deepfuture/model.py` - Main DeepFuture Net model
+- `src/deepsequence/__init__.py` - Package initialization
+- `src/deepsequence/config.py` - Configuration and path management
+- `src/deepsequence/utils.py` - Utility functions (data prep, encoding, metrics)
+- `src/deepsequence/activations.py` - Custom activation functions (swish, mish, listh)
+- `src/deepsequence/seasonal_component.py` - Seasonal decomposition module
+- `src/deepsequence/regressor_component.py` - Regression component module
+- `src/deepsequence/model.py` - Main DeepSequence model
 
 **Benefits**:
 - ✅ Reusable, modular code

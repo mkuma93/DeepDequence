@@ -1,4 +1,4 @@
-# DeepFuture Net - SKU Level Forecasting
+# DeepSequence - SKU Level Forecasting
 
 A machine learning project for forecasting at SKU (Stock Keeping Unit) level using various techniques including LightGBM models and deep learning approaches.
 
@@ -6,19 +6,84 @@ A machine learning project for forecasting at SKU (Stock Keeping Unit) level usi
 
 This project aims to forecast stock demand at the SKU level using historical data. Multiple modeling approaches have been explored and compared:
 
-- **DeepFuture Net** ⭐: A custom deep learning architecture inspired by Prophet, designed specifically for SKU-level forecasting with seasonal patterns
+- **DeepSequence** ⭐: A custom deep learning architecture inspired by Prophet, designed specifically for SKU-level forecasting with seasonal patterns
 - **LightGBM Models**: Cluster-based and distance-based forecasting approaches
 - **Baseline Models**: Naive forecasting methods for comparison and benchmarking
 
-### Key Innovation: DeepFuture Net
+### Key Innovation: DeepSequence
 
-DeepFuture Net is an original deep learning architecture that combines:
+DeepSequence is an original deep learning architecture that combines:
 - **Seasonal Components**: Inspired by Prophet's additive model for capturing weekly, monthly, and yearly seasonality
 - **Recurrent Components**: LSTM/GRU layers for temporal dependencies
 - **Contextual Features**: Cluster-based and exogenous variables integration
 - **Multi-horizon Forecasting**: Direct prediction of multiple future time steps
 
 This custom architecture was developed to handle the unique challenges of retail SKU forecasting, including intermittent demand and multiple seasonal patterns.
+
+## Architecture Diagram
+
+```mermaid
+graph TB
+    subgraph Input["📊 Input Data"]
+        TS[Time Series Data<br/>ds, StockCode, Quantity]
+        EXOG[Exogenous Variables<br/>Price, Clusters, Holidays]
+    end
+    
+    subgraph Seasonal["🌊 Seasonal Component"]
+        TIME[Time Feature<br/>Extraction]
+        EMBED_W[Weekly<br/>Embedding]
+        EMBED_M[Monthly<br/>Embedding]
+        EMBED_Y[Yearly<br/>Embedding]
+        HIDDEN_S[Hidden Layers<br/>+ Dropout]
+        OUT_S[Seasonal Output]
+        
+        TIME --> EMBED_W
+        TIME --> EMBED_M
+        TIME --> EMBED_Y
+        EMBED_W --> HIDDEN_S
+        EMBED_M --> HIDDEN_S
+        EMBED_Y --> HIDDEN_S
+        HIDDEN_S --> OUT_S
+    end
+    
+    subgraph Regressor["📈 Regressor Component"]
+        CAT[Categorical Features<br/>StockCode, Cluster]
+        CONT[Context Variables<br/>Price, Lags]
+        EMBED_R[Embedding Layer]
+        LATTICE[Lattice Layer<br/>Constraints]
+        HIDDEN_R[Hidden Layers<br/>+ Dropout]
+        OUT_R[Regression Output]
+        
+        CAT --> EMBED_R
+        CONT --> LATTICE
+        EMBED_R --> HIDDEN_R
+        LATTICE --> HIDDEN_R
+        HIDDEN_R --> OUT_R
+    end
+    
+    subgraph Combine["⚡ Combination Layer"]
+        ADD[Additive/Multiplicative<br/>Mode]
+        FINAL[Final Forecast<br/>ŷ]
+        
+        ADD --> FINAL
+    end
+    
+    TS --> TIME
+    TS --> CAT
+    EXOG --> CONT
+    
+    OUT_S --> ADD
+    OUT_R --> ADD
+    
+    style Input fill:#e1f5ff
+    style Seasonal fill:#fff4e1
+    style Regressor fill:#ffe1f5
+    style Combine fill:#e1ffe1
+```
+
+**Formula**: `ŷ = f(σ_seasonal, τ_trend)` where the combination mode can be additive (`ŷ = σ_s + τ_r`) or multiplicative (`ŷ = σ_s × τ_r`)
+
+📖 **[View detailed architecture diagrams →](docs/architecture_diagram.md)**
 
 ## Project Structure
 
@@ -93,7 +158,7 @@ jupyter notebook notebooks/DeepFuture_Demo.ipynb
 ```python
 import sys
 sys.path.insert(0, 'src')
-from deepfuture import DeepFutureModel, SeasonalComponent, RegressorComponent
+from deepsequence import DeepSequenceModel, SeasonalComponent, RegressorComponent
 
 # Prepare your time series data
 # ts: DataFrame with columns ['ds', 'id_cat', 'target_variable']
@@ -115,7 +180,7 @@ regressor = RegressorComponent(
 regressor.reg_model(id_input=seasonal.s_model.input[-1])
 
 # Combine and train
-model = DeepFutureModel(mode='additive')
+model = DeepSequenceModel(mode='additive')
 model.build(seasonal, regressor)
 model.compile(loss='mape', learning_rate=0.001)
 history = model.fit(train_input, train_target, epochs=50)
