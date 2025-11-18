@@ -48,6 +48,12 @@ Thumbs.db
 
 # Logs
 *.log
+*_output.log
+
+# Output files
+quick_performance_results.csv
+*_forecast.csv
+*forecast.csv
 
 # Old/backup files
 *.old
