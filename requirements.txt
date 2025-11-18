@@ -9,6 +9,8 @@ lightgbm>=3.0.0
 # Deep Learning
 tensorflow>=2.6.0
 tensorflow-lattice>=2.0.9
+torch>=2.0.0
+pytorch-tabnet>=4.0.0
 
 # Categorical Encoding
 category-encoders>=2.2.0
