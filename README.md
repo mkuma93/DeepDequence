@@ -1,24 +1,28 @@
-# DeepSequence - SKU Level Forecasting
+# DeepSequence
 
-A machine learning project for forecasting at SKU (Stock Keeping Unit) level using various techniques including LightGBM models and deep learning approaches.
+**Neural Architecture for Intermittent Demand Forecasting**
 
-## Project Overview
+DeepSequence is a specialized deep learning architecture for SKU-level demand forecasting, achieving **35.95% improvement** over LightGBM on highly sparse data (87.5% zeros).
 
-This project aims to forecast stock demand at the SKU level using historical data. Multiple modeling approaches have been explored and compared:
+## Overview
 
-- **DeepSequence** ⭐: A custom deep learning architecture inspired by Prophet, designed specifically for SKU-level forecasting with seasonal patterns
-- **LightGBM Models**: Cluster-based and distance-based forecasting approaches
-- **Baseline Models**: Naive forecasting methods for comparison and benchmarking
+**DeepSequence** is a state-of-the-art neural architecture for intermittent demand forecasting, specifically designed to handle sparse time series data where 80-90% of observations are zero.
 
-### Key Innovation: DeepSequence
+### Key Features
 
-DeepSequence is an original deep learning architecture that combines:
-- **Seasonal Components**: Inspired by Prophet's additive model for capturing weekly, monthly, and yearly seasonality
-- **Trend Components**: Temporal pattern learning with attention mechanisms
-- **Contextual Features**: Cluster-based and exogenous variables integration
-- **Multi-horizon Forecasting**: Direct prediction of multiple future time steps
+- **4-Component Architecture**: Seasonal (with Fourier features), Trend, Regressor, Holiday
+- **TabNet Integration**: Attention-based feature selection on component inputs
+- **Cross-Component Interactions**: Polynomial feature combinations via CrossNetwork
+- **Intermittent Handler**: Explicit zero vs non-zero probability modeling
+- **Shared Embeddings**: 16-dim ID embedding reused across all components
+- **172K Parameters**: Efficient yet powerful architecture
 
-This custom architecture was developed to handle the unique challenges of retail SKU forecasting, including intermittent demand and multiple seasonal patterns.
+### Performance
+
+- ✅ **35.95% MAE improvement** over LightGBM (4.987 → 3.194)
+- ✅ Handles **87.5% sparse demand** effectively
+- ✅ No data leakage (proper temporal validation)
+- ✅ End-to-end differentiable architecture
 
 ## Architecture Diagram
 
@@ -143,8 +147,8 @@ jupyter
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/mkuma93/forecasting.git
-cd forecasting
+git clone https://github.com/mkuma93/deepsequence.git
+cd deepsequence
 ```
 
 2. Create a virtual environment:
@@ -171,29 +175,42 @@ jupyter notebook notebooks/DeepSequence_Demo.ipynb
 ```python
 import sys
 sys.path.insert(0, 'src')
-from deepsequence import DeepSequenceModel, SeasonalComponent, RegressorComponent
+from deepsequence.model import DeepSequenceModel
+import pandas as pd
+import numpy as np
 
-# Prepare your time series data
-# ts: DataFrame with columns ['ds', 'id_cat', 'target_variable']
-# exog: DataFrame with exogenous variables
+# Load your data
+data = pd.read_csv('your_data.csv')
+data['id_var'] = data['StockCode'].astype('category').cat.codes
 
-# Build seasonal component
+# Create Fourier features
+data = DeepSequenceModel.create_fourier_features(data)
+
+# Prepare seasonal component features
+from deepsequence.seasonal_component import SeasonalComponent
 seasonal = SeasonalComponent(
-    data=ts, target=['target'], id_var='id_cat',
-    horizon=8, weekly=True, monthly=True, yearly=True
+    data=data, target=['Quantity'], id_var='id_var',
+    horizon=8, weekly=True, monthly=True
 )
 seasonal.seasonal_feature()
-seasonal.seasonal_model(hidden=2, hidden_unit=32)
 
-# Build regressor component
-regressor = RegressorComponent(
-    ts=ts, exog=exog, target=['target'], id_var='id_cat',
-    categorical_var=['cluster'], context_variable=['price', 'lag1']
+# Build full model
+model = DeepSequenceModel(
+    use_intermittent=True,
+    use_fourier=True,
+    use_cross_component=True
 )
-regressor.reg_model(id_input=seasonal.s_model.input[-1])
 
-# Combine and train
-model = DeepSequenceModel(mode='additive')
+# Get unique counts for seasonal features
+seasonal_cols = ['week_of_year', 'month', 'quarter', 'day_of_week']
+seasonal_n_unique = {col: data[col].nunique() for col in seasonal_cols}
+
+# Build architecture
+full_model = model.build_full_architecture(
+    n_ids=data['id_var'].nunique(),
+    seasonal_cols=seasonal_cols,
+    seasonal_n_unique=seasonal_n_unique
+)
 model.build(seasonal, regressor)
 model.compile(loss='mape', learning_rate=0.001)
 history = model.fit(train_input, train_target, epochs=50)
